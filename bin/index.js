@@ -5,6 +5,7 @@ const addDir = require("./add-dir");
 const listConfig = require("./list-config");
 const selectConfig = require("./select-config");
 const parseZip = require("./parse-zip");
+const deleteConfig = require("./delete-config");
 
 const cli = meow(
   `
@@ -14,18 +15,20 @@ const cli = meow(
     -a,--add 添加目录
     -l,--list 目录列表
     -f,--file download.zip 文件路径
+    -d,--delete 删除项目配置
     --help 帮助
 `,
   {
     alias: {
       a: "add",
       l: "list",
-      f: "file"
+      f: "file",
+      d: "delete"
     }
   }
 );
 
-const { add, list, file } = cli.flags;
+const { add, list, file, d } = cli.flags;
 
 if (add === true) {
   prompt.start();
@@ -42,9 +45,11 @@ if (add === true) {
   // 获取配置列表
   listConfig();
 } else if (file) {
-  selectConfig().then(({ proj }) => {
+  selectConfig("更新iconfont").then(({ proj }) => {
     parseZip(proj, file);
   });
+} else if (d === true) {
+  deleteConfig();
 } else {
   console.log("未知的参数,查看帮助 update-iconfont --help", cli.flags);
 }

@@ -5,18 +5,19 @@ const dataConfig = require("./data-config");
 
 const prompt = inquirer.createPromptModule();
 
-function writeData(path) {
-  const projName = path.split("/").pop();
-  dataConfig.writeData(projName, path);
-  console.log(`添加成功，${projName}:${path}`);
+function writeData(iconfontPath, projName) {
+  dataConfig.writeData(projName, iconfontPath);
+  console.log(`添加成功，${projName}:${iconfontPath}`);
   console.log("使用update-iconfont -l 查看已添加列表");
 }
 
-module.exports = function addDir(dir) {
+module.exports = function addDir(dirPath) {
+  const dir = dirPath ? dirPath.trim() : dirPath;
   const isExist = fs.existsSync(dir);
   if (!isExist) {
     return console.error(`路径不存在:${dir}`);
   }
+  const projName = dir.split("/").pop();
   exec(`find ${dir} -name 'iconfont'`, (err, stdout, stderr) => {
     if (err) {
       return console.log("err:", err);
@@ -36,7 +37,7 @@ module.exports = function addDir(dir) {
       return console.error("未找到iconfont目录", stdout);
     }
     if (length === 1) {
-      writeData(dirs[0]);
+      writeData(dirs[0], projName);
     } else {
       prompt({
         name: "path",
@@ -46,7 +47,7 @@ module.exports = function addDir(dir) {
         default: 0
       }).then(
         ({ path }) => {
-          writeData(path);
+          writeData(path, projName);
         },
         error => {
           console.log(error);

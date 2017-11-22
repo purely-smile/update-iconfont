@@ -11,9 +11,14 @@ module.exports = {
     }
     return JSON.parse(fs.readFileSync(dataPath, "utf8") || "{}");
   },
-  writeData(projName, projPath) {
+  writeData(projName, projPath, isDelete = false) {
     const data = this.readData();
-    data[projName] = projPath;
+    if (isDelete) {
+      delete data[projName];
+    } else {
+      data[projName] = projPath;
+    }
     fs.writeFileSync(dataPath, JSON.stringify(data));
+    console.log("操作成功");
   }
 };

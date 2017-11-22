@@ -8,7 +8,7 @@
   },
   "bin": {
     "update-iconfont": "bin/index.js",
-    "ui":"bin/index.js"
+    "ui": "bin/index.js"
   },
   "keywords": [],
   "author": "",

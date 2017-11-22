@@ -3,11 +3,8 @@ const path = require("path");
 const unzip = require("unzip");
 const dataConfig = require("./data-config");
 
-// const zipPath = path.resolve(__dirname, "../download.zip");
-// const outPath = path.resolve(__dirname, "../output");
-
 module.exports = function parseZip(projName, zipPath) {
-  if (!zipPath || !/download\.zip$/.test(zipPath)) {
+  if (!zipPath || !/download.*\.zip$/.test(zipPath)) {
     return console.log(
       "iconfont 名称必须是download.zip。不支持其他格式。当前zipPath：",
       zipPath
@@ -22,7 +19,7 @@ module.exports = function parseZip(projName, zipPath) {
     .createReadStream(zipPath)
     .pipe(unzip.Parse())
     .on("entry", (entry) => {
-      if (/iconfont\.eot|svg|woff|css$/.test(entry.path)) {
+      if (/iconfont\.(eot|svg|woff|css|ttf)$/.test(entry.path)) {
         const fileName = entry.path.split("/").pop();
         entry.pipe(fs.createWriteStream(path.resolve(projPath, fileName)));
       } else {
