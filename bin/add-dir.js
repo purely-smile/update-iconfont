@@ -1,5 +1,6 @@
 const { exec } = require("child_process");
 const fs = require("fs");
+const path = require("path");
 const inquirer = require("inquirer");
 const dataConfig = require("./data-config");
 
@@ -7,12 +8,12 @@ const prompt = inquirer.createPromptModule();
 
 function writeData(iconfontPath, projName) {
   dataConfig.writeData(projName, iconfontPath);
-  console.log(`添加成功，${projName}:${iconfontPath}`);
+  console.log(`添加信息，${projName}:${iconfontPath}`);
   console.log("使用update-iconfont -l 查看已添加列表");
 }
 
 module.exports = function addDir(dirPath) {
-  const dir = dirPath ? dirPath.trim() : dirPath;
+  const dir = dirPath ? path.resolve(process.env.PWD, dirPath.trim()) : dirPath;
   const isExist = fs.existsSync(dir);
   if (!isExist) {
     return console.error(`路径不存在:${dir}`);
@@ -30,8 +31,8 @@ module.exports = function addDir(dirPath) {
     }
     const dirs = stdout
       .split("\n")
-      .map(val => val.trim())
-      .filter(Boolean);
+      .filter(Boolean)
+      .map(val => path.resolve(__dirname, val.trim()));
     const { length } = dirs;
     if (length === 0) {
       return console.error("未找到iconfont目录", stdout);
@@ -40,14 +41,14 @@ module.exports = function addDir(dirPath) {
       writeData(dirs[0], projName);
     } else {
       prompt({
-        name: "path",
+        name: "filepath",
         message: "在项目中找到了多个iconfont路径,请选择...",
         type: "list",
         choices: dirs,
         default: 0
       }).then(
-        ({ path }) => {
-          writeData(path, projName);
+        ({ filepath }) => {
+          writeData(filepath, projName);
         },
         error => {
           console.log(error);
